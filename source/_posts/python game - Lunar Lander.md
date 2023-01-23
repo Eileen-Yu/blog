@@ -1,12 +1,23 @@
 ---
 title: python game-Lunar Lander
+categories: [tech]
 ---
 
-## 游戏规则：
+## Rules：
 
-直接用python3跑。用户可以在游戏初始进入cheat model，更改默认值，重新设定起始高度、速度和油量，并正式进入游戏。输入每次选择使用的油量，会遵循一定的数学公式，改变高度和速度，在油量用完之前，保证落地并将速度维持在10m/s以下，即可完成safe landing赢得游戏。
+Users can enter the cheat model at the beginning of the game to change the default values, reset:
+
+- the starting height
+- the starting speed
+- fuel volume.
+
+Then enter the game.
+
+Enter the amount of fuel you choose to use each time, and follow a certain mathematical formula to change the height and speed.
+Before the fuel is used up, make sure to land and keep the speed below 10m/s, so as to safely landing and win the game.
 
 ## code：
+
 ```python
 import re
 

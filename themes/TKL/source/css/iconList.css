@@ -26,9 +26,9 @@
 .icon-crop:before { content: "\e629"; }
 .icon-scissors:before { content: "\e62a"; }
 .icon-console:before { content: "\e62b"; }
-.icon-googleplus:before { content: "\e62c"; }
-.icon-googleplus2:before { content: "\e62d"; }
-.icon-google-drive:before { content: "\e62e"; }
+.icon-linkedin:before { content: "\e62c"; }
+.icon-linkedin:before { content: "\e62d"; }
+.icon-linkedin:before { content: "\e62e"; }
 .icon-facebook:before { content: "\e62f"; }
 .icon-twitter:before { content: "\e630"; }
 .icon-feed:before { content: "\e631"; }
@@ -70,7 +70,7 @@
 .icon-vimeo:before { content: "\e655"; }
 .icon-twitter2:before { content: "\e656"; }
 .icon-facebook2:before { content: "\e657"; }
-.icon-googleplus3:before { content: "\e658"; }
+.icon-linkedin:before { content: "\e658"; }
 .icon-tumblr:before { content: "\e659"; }
 .icon-dribbble2:before { content: "\e65a"; }
 .icon-stumbleupon:before { content: "\e65b"; }

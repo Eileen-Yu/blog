@@ -1,11 +1,17 @@
 ---
 title: python game - Pig Game
+categories: [tech]
 ---
 
-## 游戏规则：
-用户和电脑进行competing，分别掷骰子，电脑先行。每轮在不掷到6的情况下，可以选择是否继续，在此之前所有1-5的分数都可累积计入，而一旦掷到6则此轮所有分数不计。先累积到50的一方获胜。若在等于大于50的情况下平手，则继续下一轮决出胜负。
+## Rules：
+
+The user and the computer play a game to roll the dice separately. The computer goes first.
+In each round, you can choose whether to continue without throwing a 6.
+Before that, all the scores of 1-5 can be accumulated and counted. Once a 6 is thrown, all the scores of this round will not be counted.
+The first to reach 50 wins. If the tie is greater than 50, continue to the next round to determine the winner.
 
 ## Code：
+
 ```python
 import random
 import re
