@@ -16,7 +16,7 @@ highlightjs: dracula
 #Works
 works:
   - works_name: LFX 22 Fall Kyverno
-    works_url: https://gitlab.com/gitlab-org/security-products/package-hunter
+    works_url: https://kyverno.io/docs/writing-policies/exceptions/
   - works_name: GSoC 22 GitLab
     works_url:
       https://gitlab.com/gitlab-org/security-products/package-hunter
