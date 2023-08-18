@@ -4,7 +4,7 @@ logo: /img/logo.png
 top_saying:
   - title: Eileen Yu
   - content: Pursuing knowledge
-bottom_saying: Rule the world ASA finish one more line of code.
+bottom_saying: viel spaß!
 # Content
 excerpt_link: Read More
 
@@ -15,6 +15,8 @@ highlightjs: dracula
 
 #Works
 works:
+  - works_name: GSoC 23 CNCF Kubebuilder
+    works_url: https://github.com/kubernetes-sigs/kubebuilder/issues/2600
   - works_name: LFX 22 Fall Kyverno
     works_url: https://kyverno.io/docs/writing-policies/exceptions/
   - works_name: GSoC 22 GitLab
