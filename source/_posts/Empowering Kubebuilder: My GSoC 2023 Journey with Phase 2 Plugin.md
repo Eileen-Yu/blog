@@ -40,7 +40,7 @@ The introduction of external plugin extends Kubebuilder's functionality. With ex
 - Easier to maintain and update the external plugins.
 
 
-**1. Getting familiar with plugin architecture**
+#### 1. Getting familiar with plugin architecture
 
 End-to-end (E2E) tests serves as a pragmatic approach for deep architectural comprehension of plugins.
 This practice has provided me with insights into the plugin interoperability and systemic behavior, encompassing not merely isolated functionalities but also overall robustness and reliability.
@@ -50,7 +50,7 @@ For enhanced long-term maintainability, we have integrated GitHub's Dependabot i
 This automated tool systematically scans for outdated dependencies and proactively fetches updates, thereby streamlining the version management process.
 This integration not only keeps our codebase current but also mitigates potential security vulnerabilities by ensuring that we are always utilizing the most up-to-date software packages.
 
-**Deliverables:**
+`Deliverables`:
 
 [Add e2e tests for sample external plugin](https://github.com/kubernetes-sigs/kubebuilder/pull/3419)
 
@@ -58,7 +58,7 @@ This integration not only keeps our codebase current but also mitigates potentia
 
 
 
-**2. Improving Plugin Usability: Features and Fixes**
+#### 2. Improving Plugin Usability: Features and Fixes
 
 Given that the external plugin is in its early stage of development, our deep-dive into its functionalities revealed a series of challenges.
 To address these, we've implemented a set of enhancements and bug fixes. 
@@ -71,7 +71,7 @@ At present, we are actively working to synchronize configuration settings betwee
 This integration aims to capture a history of utilized plugins and their associated combinations, as well as keep a record of scaffolded resources like APIs and webhooks.
 This advancement will significantly enhance the 'chaining mode' capabilities, thereby offering users increased flexibility in their scaffolding endeavors.
 
-**Deliverables:**
+`Deliverables`:
 
 [Make external plugin path configurable](https://github.com/kubernetes-sigs/kubebuilder/pull/3437)
 
@@ -83,7 +83,7 @@ This advancement will significantly enhance the 'chaining mode' capabilities, th
 
 
 
-**3. Crafting Comprehensive User Tutorials With JavaScript Example**
+#### 3. Crafting Comprehensive User Tutorials With JavaScript Example
 
 In order to flatten the learning curve associated with our external plugin offering, we've diligently crafted extensive documentation.
 This guides users through the entire process of writing, building, and installing a plugin that is compatible with Kubebuilder. 
@@ -93,7 +93,7 @@ One of the most compelling features of our external plugin framework is its lang
 To validate this flexibility and gain deeper insights into our plugin architecture, I developed a sample plugin using JavaScript.
 This hands-on experience not only enriched the tutorial content, providing substantial value to our users, but also served as a practical example in our official guidelines, offering users an illustrative case study.
 
-**Deliverables:**
+`Deliverables`:
 
 [Add tutorial for external plugin](https://github.com/kubernetes-sigs/kubebuilder/pull/3488)
 
