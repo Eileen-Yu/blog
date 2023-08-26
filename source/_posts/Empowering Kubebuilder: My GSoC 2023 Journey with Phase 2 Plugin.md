@@ -28,7 +28,11 @@ My contribution is mainly around external plugin, which enables users to develop
 
 An external plugin is an executable (can be written in any language) that implements an execution pattern that Kubebuilder knows how to interact with. 
 
-![How Kubebuilder communicates with external plugin](https://github.com/kubernetes-sigs/kubebuilder/assets/48944635/c11094b8-64bc-4523-9dd5-b7197ac75178)
+<p align="center">
+  <img src="https://github.com/kubernetes-sigs/kubebuilder/assets/48944635/c11094b8-64bc-4523-9dd5-b7197ac75178" title="How the external plugin communicates with Kubebuilder">
+  <br>
+  <em>How the external plugin communicates with Kubebuilder</em>
+</p>
 
 The introduction of external plugin extends Kubebuilder's functionality. With external plugin, there would be some more obvious improvements:
 
