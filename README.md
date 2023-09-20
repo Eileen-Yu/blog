@@ -1,4 +1,4 @@
-This blog has been deprecated. Please see the new one:
+⚠️ This blog has been deprecated. Please see the new one:
 eileen.hungry-mg.site
 
 # blog
