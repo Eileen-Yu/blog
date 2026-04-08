@@ -1,6 +1,8 @@
 ---
-title: python game-Lunar Lander
+title: Python Game - Lunar Lander
+date: 2022-01-10
 categories: [tech]
+tags: [Python, Learning]
 ---
 
 ## Rules：

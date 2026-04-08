@@ -1,6 +1,8 @@
 ---
 title: Empowering Kubebuilder - My GSoC 2023 Journey with Phase 2 Plugin
+date: 2023-09-01
 categories: [tech]
+tags: [GSoC, Kubernetes, Kubebuilder, CNCF, Go]
 ---
 
 I am thrilled to have the opportunity to participate in the Google Summer of Code
@@ -20,7 +22,7 @@ To see more about Kubebuilder: https://book.kubebuilder.io/introduction
 
 I was so fortunate to have the guidance and mentorship of [Bryce Palmer](https://github.com/everettraven), [Camila Macedo](https://github.com/camilamacedo86) and [Rashmi Gottipati](https://github.com/rashmigottipati)!
 
-Their sensible insights, unweaving support, and responsive feedback not only taught me much professional knowledge, but also were instrumental in aligning my contributions with the broader community vision.
+Their sensible insights, unwavering support, and responsive feedback not only taught me much professional knowledge, but also were instrumental in aligning my contributions with the broader community vision.
 
 ### My Project
 

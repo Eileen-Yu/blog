@@ -1,6 +1,8 @@
 ---
 title: GSoC 22 Package Hunter for K8s
+date: 2022-09-01
 categories: [tech]
+tags: [GSoC, Kubernetes, GitLab, Security, Node.js]
 ---
 
 ### Introduction

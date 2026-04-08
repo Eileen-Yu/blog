@@ -1,6 +1,8 @@
 ---
-title: python game - Pig Game
+title: Python Game - Pig Game
+date: 2022-01-05
 categories: [tech]
+tags: [Python, Learning]
 ---
 
 ## Rules：

@@ -1,6 +1,8 @@
 ---
-title: python-Regex Notes
+title: Python Regex Notes
+date: 2022-01-15
 categories: [tech]
+tags: [Python, Learning]
 ---
 
 Python comes with a built-in regular expression library re.
