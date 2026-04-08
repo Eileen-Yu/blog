@@ -1,7 +1,5 @@
-⚠️ This blog has been deprecated. Please see the new one:
-eileen.hungry-mg.site
+# Eileen's Blog
 
-# blog
-Eileen's portfolio
+Personal blog at [eileenyu.dev](https://eileenyu.dev)
 
-Still under construction...👷‍♀️
+Built with [Hexo](https://hexo.io/) and deployed on [Cloudflare Pages](https://pages.cloudflare.com/).
