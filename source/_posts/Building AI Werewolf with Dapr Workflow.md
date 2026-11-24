@@ -64,15 +64,9 @@ Continue-as-new between rounds keeps the history from growing into a novel. Same
 
 ### Parallel where the rules allow it
 
-Werewolf is mostly waiting on models. The workflow runs every move at once that the rules let it, and serializes only what has to answer the previous line.
+Werewolf is mostly waiting on models. Anything the rules don't force into order runs at once: the seer's check beside the wolves at night, every exile vote by day. Speeches stay serial — each has to answer the last. Deaths stay serial too: last words, then the badge, then the hunter's shot.
 
-| Phase | Parallel | Ordered |
-|---|---|---|
-| Night | Seer's check next to the wolves | Wolf chat in turn → all wolves vote at once → witch (needs the victim) |
-| Day | Every exile vote | Speeches; next speaker prepares while this one talks |
-| Death | — | Last words → badge → hunter shot |
-
-The fun one is speech prep. Rewriting notes is most of an LLM turn's latency; the actual speech is the short bit at the end. Speeches still have to go one-by-one — each answers the last — so while speaker *n* talks, speaker *n+1* already runs a silent `Prepare` turn:
+The interesting trick is speeches. Rewriting notes eats most of an LLM turn; the spoken line is the short bit at the end. So while speaker *n* is talking, speaker *n+1* already runs a silent `Prepare` turn that brings their notes up to date:
 
 ```go
 m := t.act(turn)
@@ -82,7 +76,7 @@ if i+1 < len(order) && !t.s.Player(order[i+1]).Human {
 a, err := t.said(turn, m, audience...)
 ```
 
-When *n+1*'s turn arrives, their notes are current through the previous speech; they only need to digest what *n* just said. Wall clock for a day of speeches is roughly "longest turn × N", not "full rewrite × N". Humans skip prep — they already know what they think, or at least they claim to.
+When *n+1*'s turn comes, they only need to digest what *n* just said. A day of speeches costs roughly the longest turn × N, not a full note rewrite × N. Humans skip prep — they already know what they think, or claim to.
 
 ### Humans are just another move type
 
