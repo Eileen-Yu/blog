@@ -106,7 +106,7 @@ The white wolf king's blast is the awkward cousin, and it shows the same idea un
 
 ### Night math that fits in one line
 
-Twelve-player boards have a guard. Guard stops the wolf kill. Witch antidote also stops the wolf kill. Both on the same player cancel — 奶穿, the classic "we saved him so hard he died" outcome:
+Twelve-player boards have a guard. Guard stops the wolf kill. Witch antidote also stops the wolf kill. Both on the same player cancel — the classic "we saved him so hard he died" outcome:
 
 ```go
 killed := victim != "" && (guarded == victim) == saved
