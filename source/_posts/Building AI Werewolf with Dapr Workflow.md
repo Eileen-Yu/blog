@@ -134,12 +134,10 @@ The prompt now detects a sheriff PK from the last election ballot on the turn (`
 
 **Personality is not a side oracle.** Rivalries used to leak into "always suspect X." Now habit and rivalry shape tone and grudges; who you think is a wolf still has to come from what happened this game. Same character, different boards, different conclusions — or the cast is just a skin.
 
-**Chinese UI left English in the wolf-vote dropdown.** `fake seer` / `hook` showed raw because the page translates via a word map the server forgot to fill. Fixed with `PageWords`, plus a test that scrapes every `opts([...])` literal off `index.html` and demands Han characters for a Chinese board. CI is a better proofreader than I am at 1am.
+### So did the village get smarter?
 
-### What I trust, what I don't
+The workflow side I will defend in a code review: filtered views, activities for LLM and RNG, continue-as-new, humans as external events, the one-line night XOR. Kill `gm` mid-argument and Catalyst's history does not care about your feelings — the game picks up with the same lines and the same bill.
 
-The durable bits I trust: filtered views, activities for LLM/RNG, continue-as-new, humans as external events, XOR-flavored night resolution. You can kill `gm` mid-argument; Catalyst's history does not care about your feelings.
+The prompt side is a bet. Unit tests prove the instructions are *present*. They do not prove nine models will suddenly stop worshipping vote consistency. That takes sitting through games — preferably while LinkedIn Influencer drafts a post about "alignment under uncertainty" over the real seer's corpse.
 
-The prompt bits I treat as hypotheses. Unit tests prove the instructions are *present*. They do not prove nine models will suddenly stop worshipping vote consistency. That takes watching games — preferably while LinkedIn Influencer drafts a post about "alignment under uncertainty" over the real seer's corpse.
-
-Repo: [github.com/Eileen-Yu/ai-werewolf](https://github.com/Eileen-Yu/ai-werewolf). Longer design notes (with the actual tradeoffs spelled out): [`docs/design.md`](https://github.com/Eileen-Yu/ai-werewolf/blob/main/docs/design.md).
+I still like that outcome. A durable orchestrator that keeps liars honest about the *table*, and lets them lie about everything else. If you want to watch them fail in public, the repo is [github.com/Eileen-Yu/ai-werewolf](https://github.com/Eileen-Yu/ai-werewolf); the longer tradeoffs live in [`docs/design.md`](https://github.com/Eileen-Yu/ai-werewolf/blob/main/docs/design.md). Bring popcorn. Or a seat.
