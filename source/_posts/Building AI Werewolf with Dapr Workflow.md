@@ -11,7 +11,7 @@ tags: [Werewolf, Dapr, Workflow, Multi-Agent, LLM, Go]
 
 Nine LLMs walk into a village. Three of them are lying. Several are confidently wrong. One thinks every disagreement is a leadership opportunity.
 
-I built [AI Werewolf](https://github.com/Eileen-Yu/ai-werewolf) so they could do that on [Dapr Workflow](https://docs.dapr.io/developing-applications/building-blocks/workflow/) without the game master also going insane. This post is the implementation: how the workflow is shaped, where prompts sit relative to the rules engine, and the bugs that only show up after you've watched a fake seer win the badge on vibes alone.
+I built [AI Werewolf](https://github.com/Eileen-Yu/ai-werewolf) so they could do that on [Dapr Workflow](https://docs.dapr.io/developing-applications/building-blocks/workflow/) without the game master also going insane. The interesting engineering is not "nine agents in a loop." It is durable execution with humans in the same path as the models: a seat can wait five minutes for a person, survive a process kill, and resume without re-rolling the night or re-billing every speech that already finished. The prompts matter too — once the orchestrator works, the agents start exploiting whatever you wrote — but the workflow is what makes the game a system instead of a script.
 
 ### A prompt is not a security boundary
 
@@ -58,15 +58,19 @@ g.State.Round++
 ctx.ContinueAsNew(g)
 ```
 
-Everything non-deterministic — dealing roles, LLM calls, random draws on a tied wolf vote — lives in activities. Kill the process mid-speech, restart it, and replay reads the recorded activity outputs instead of burning another pile of tokens on the same monologue about "alignment."
+Everything non-deterministic — dealing roles, LLM calls, random draws on a tied wolf vote — lives in activities. That is the usual durable-execution deal: the orchestrator code must be deterministic on replay, so randomness and side effects are recorded as activity results.
 
-Continue-as-new between rounds keeps the history from growing into a novel. Same instance ID, fresh history, state as input. One game, many executions.
+A caveat worth saying out loud, because LLM activities are expensive side effects. If an activity has completed and its result is in the workflow history, replay reuses that result and does not call the model again. If the process dies after the HTTP response came back but before the completion is persisted, the activity can run again — another speech, another bill. The design reduces duplicate spend; it does not make LLM calls exactly-once. Activity retries (three attempts, exponential backoff) are for transient failures of the call itself, which for a chat completion also means you may pay for a partial attempt you never got to keep.
+
+Continue-as-new between rounds keeps that history from growing into a novel. It is still the same workflow instance — same ID, same game — but a new execution whose history starts fresh, with the full `game.State` (and human seat keys) passed as input. One logical game, many executions of the same instance, not a pile of unrelated workflows.
 
 ### Parallel where the rules allow it
 
-Werewolf is mostly waiting on models. Anything the rules don't force into order runs at once: the seer's check beside the wolves at night, every exile vote by day. Speeches stay serial — each has to answer the last. Deaths stay serial too: last words, then the badge, then the hunter's shot.
+Werewolf is mostly waiting on models. Anything the rules don't force into order is scheduled at once: the seer's check beside the wolves at night, every exile vote by day. Speeches stay serial — each has to answer the last. Deaths stay serial too: last words, then the badge, then the hunter's shot.
 
-The interesting trick is speeches. Rewriting notes eats most of an LLM turn; the spoken line is the short bit at the end. So while speaker *n* is talking, speaker *n+1* already runs a silent `Prepare` turn that brings their notes up to date:
+Parallelism does not mean concurrent mutation. A day vote fans out every `act`, then `Await`s in seat order and only then writes notes and ballots. The models think together; the state machine still advances one commit at a time. On replay those awaits resolve from history in the same order, so you do not get a different ballot because two completions raced.
+
+The interesting latency trick is speeches. Rewriting notes eats most of an LLM turn; the spoken line is the short bit at the end. So while speaker *n* is talking, speaker *n+1* already runs a silent `Prepare` turn that brings their notes up to date:
 
 ```go
 m := t.act(turn)
@@ -80,7 +84,9 @@ When *n+1*'s turn comes, they only need to digest what *n* just said. A day of s
 
 ### Humans are just another move type
 
-I did not want a second code path for "real people."
+This is the part that is hard to fake with a plain agent loop, and the reason I wanted Dapr Workflow rather than "start nine goroutines and hope."
+
+I did not want a second code path for "real people." Every move goes through `table.act`:
 
 ```go
 func (t *table) act(turn brain.Turn) move {
@@ -92,9 +98,11 @@ func (t *table) act(turn brain.Turn) move {
 }
 ```
 
-A human seat waits on `WaitForExternalEvent("move-<round>-<n>", timeout)`. Same `settle` as an AI answer. Timeout fires → `ActActivity` covers for them, and privately they get told the AI took the wheel. Votes asked of everyone still fan out; each person is one more waiter among the AIs.
+A human seat publishes a pending turn to the page, then waits on `WaitForExternalEvent("move-<round>-<n>", HumanTimeout+grace)`. The browser posts a move; `gm` raises that event. Same `settle` as an AI answer — a bad pick still becomes a pass. If the timer fires, the person is told privately and `ActActivity` covers for them. Votes asked of everyone still fan out; each person is one more durable waiter among the AIs.
 
-The white wolf king's blast is the awkward cousin. He may explode after *any* speech, so the workflow cannot sit there looking expectant — that would broadcast "the king is still alive." After each speech it checks a zero-timeout external event: returns immediately with the blast or with nothing. Deterministic on replay, because the event is in the history or it isn't. An AI king is asked off the public "waiting on" channel for the same reason.
+Replay is what makes this more than a web handler with a sleep. An external event that already arrived is in the workflow history. After a restart, the orchestrator does not sit for another five minutes hoping you click again — it sees the event (or the cancellation) and continues. A timer that already fired stays fired. That is the difference between "the HTTP server came back" and "the game came back."
+
+The white wolf king's blast is the awkward cousin, and it shows the same idea under pressure. He may explode after *any* speech, so the workflow cannot look expectant — that would broadcast "the king is still alive." After each speech it checks a *zero-timeout* external event: returns immediately with the blast or with nothing. Deterministic on replay, because the event is in the history or it isn't. An AI king is asked off the public "waiting on" channel for the same reason.
 
 ### Night math that fits in one line
 
@@ -107,6 +115,8 @@ killed := victim != "" && (guarded == victim) == saved
 XOR in a trench coat. Poison still kills through a guard. Unit tests cover guarded / saved / both / poisoned / neither, because this is the kind of rule people argue about at 2am and then implement wrong.
 
 ### Strategy lives in prompts; mechanics live in Go
+
+Once the workflow could reliably run a game — deal, night, election, day, continue-as-new, a human seat that survives a restart — the harder problem became making sure the agents were playing Werewolf rather than exploiting my prompts.
 
 The rules engine does not know what a "hook" is emotionally. It knows vote tallies, role abilities, and who may see which log lines. How to *play* sits in `brain/text.go` — two playbooks, Chinese and English, same structure.
 
@@ -136,8 +146,12 @@ The prompt now detects a sheriff PK from the last election ballot on the turn (`
 
 ### So did the village get smarter?
 
-The workflow side I will defend in a code review: filtered views, activities for LLM and RNG, continue-as-new, humans as external events, the one-line night XOR. Kill `gm` mid-argument and Catalyst's history does not care about your feelings — the game picks up with the same lines and the same bill.
+I do not have a honest win-rate table to flash here. `werewolf stats` exists to count patterns across many LLM games — how often the pack fakes, whether Day 1 exiles a wolf, whether the witch burns the antidote on Night 1 — but I am not going to invent percentages for a blog. What I do have are games that forced the prompt changes above.
 
-The prompt side is a bet. Unit tests prove the instructions are *present*. They do not prove nine models will suddenly stop worshipping vote consistency. That takes sitting through games — preferably while LinkedIn Influencer drafts a post about "alignment under uncertainty" over the real seer's corpse.
+One early run is still the README's demo: the fake seer took the badge, the real seer went out on the sheriff's one-and-a-half votes, and his last words were *"Leadership lesson: consensus isn't verification."* That is the village playing the implementation. Later twelve-player games showed a different failure mode — players prosecuting speech–vote consistency until an uncontested Guard claim lost to a three-day-old ballot nitpick — which is why the evidence-weighting rewrite exists. The sheriff PK change came the same way: watching voters stamp the same name again after a tie, with the new speeches already in context.
+
+The workflow side I will defend in a code review: filtered views, activities for LLM and RNG, continue-as-new on one instance, humans as external events that replay cleanly, the one-line night XOR. Kill `gm` mid-argument and the history still has every completed activity and every human event that already landed — with the at-least-once caveat on anything that had not finished persisting.
+
+The prompt side is a bet. Unit tests prove the instructions are *present*. They do not prove nine models will suddenly stop worshipping vote consistency. That takes sitting through more games — preferably while LinkedIn Influencer drafts a post about "alignment under uncertainty" over the real seer's corpse.
 
 I still like that outcome. A durable orchestrator that keeps liars honest about the *table*, and lets them lie about everything else. If you want to watch them fail in public, the repo is [github.com/Eileen-Yu/ai-werewolf](https://github.com/Eileen-Yu/ai-werewolf); the longer tradeoffs live in [`docs/design.md`](https://github.com/Eileen-Yu/ai-werewolf/blob/main/docs/design.md). Bring popcorn. Or a seat.
