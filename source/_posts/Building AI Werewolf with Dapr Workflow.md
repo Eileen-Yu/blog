@@ -13,7 +13,7 @@ Nine LLMs walk into a village. Three of them are lying. Several are confidently 
 
 I built [AI Werewolf](https://github.com/Eileen-Yu/ai-werewolf) so they could do that on [Dapr Workflow](https://docs.dapr.io/developing-applications/building-blocks/workflow/) without the game master also going insane. This post is the implementation: how the workflow is shaped, where prompts sit relative to the rules engine, and the bugs that only show up after you've watched a fake seer win the badge on vibes alone.
 
-## A prompt is not a security boundary
+### A prompt is not a security boundary
 
 That is the whole architecture, really.
 
@@ -37,7 +37,7 @@ if turn.Me.Role.IsWolf() {
 
 Lying about the *game* is legal (wolves fake roles). Inventing a player who isn't seated is not. The host checks every answer and re-asks up to twice; after that, a bad pick becomes a pass and the game moves on. A bad answer can cost you your move. It can never stall nine other agents.
 
-## One round per execution
+### One round per execution
 
 `GameWorkflow` is boring on purpose:
 
@@ -62,7 +62,7 @@ Everything non-deterministic — dealing roles, LLM calls, random draws on a tie
 
 Continue-as-new between rounds keeps the history from growing into a novel. Same instance ID, fresh history, state as input. One game, many executions.
 
-## Parallel where the rules allow it
+### Parallel where the rules allow it
 
 Werewolf is mostly waiting on models. The workflow runs every move at once that the rules let it, and serializes only what has to answer the previous line.
 
@@ -84,7 +84,7 @@ a, err := t.said(turn, m, audience...)
 
 When *n+1*'s turn arrives, their notes are current through the previous speech; they only need to digest what *n* just said. Wall clock for a day of speeches is roughly "longest turn × N", not "full rewrite × N". Humans skip prep — they already know what they think, or at least they claim to.
 
-## Humans are just another move type
+### Humans are just another move type
 
 I did not want a second code path for "real people."
 
@@ -102,7 +102,7 @@ A human seat waits on `WaitForExternalEvent("move-<round>-<n>", timeout)`. Same 
 
 The white wolf king's blast is the awkward cousin. He may explode after *any* speech, so the workflow cannot sit there looking expectant — that would broadcast "the king is still alive." After each speech it checks a zero-timeout external event: returns immediately with the blast or with nothing. Deterministic on replay, because the event is in the history or it isn't. An AI king is asked off the public "waiting on" channel for the same reason.
 
-## Night math that fits in one line
+### Night math that fits in one line
 
 Twelve-player boards have a guard. Guard stops the wolf kill. Witch antidote also stops the wolf kill. Both on the same player cancel — 奶穿, the classic "we saved him so hard he died" outcome:
 
@@ -112,7 +112,7 @@ killed := victim != "" && (guarded == victim) == saved
 
 XOR in a trench coat. Poison still kills through a guard. Unit tests cover guarded / saved / both / poisoned / neither, because this is the kind of rule people argue about at 2am and then implement wrong.
 
-## Strategy lives in prompts; mechanics live in Go
+### Strategy lives in prompts; mechanics live in Go
 
 The rules engine does not know what a "hook" is emotionally. It knows vote tallies, role abilities, and who may see which log lines. How to *play* sits in `brain/text.go` — two playbooks, Chinese and English, same structure.
 
@@ -120,13 +120,13 @@ Early mistake: I dealt every pack a forced fake-seer tactic and told the good si
 
 So nothing is dealt now. Wolves see a menu of plays with costs (single fake, double claim, stay dark). Good players get *how* to weigh a claim, never a prior that the first speaker is lying. Win rates are not tuned with a thumb on the scale; `werewolf stats` just counts what actually happens across many games. If the pack always fakes, that shows up as a number, not as me editing prompts until the spreadsheet looks fair.
 
-### The pack used to have a CEO
+#### The pack used to have a CEO
 
 One wolf used to write the night plan after chat. Everyone else's suggestions counted only if that wolf felt like typing them. A named faker was forced to claim. Democracy!
 
 Now talk is not a move. Chat once around the table, then every living wolf submits `wolf_vote` in parallel: kill target, which side to wipe, tomorrow's push, and whether they personally volunteer to fake or hook. Strict majority. Tie → short rechat → revote → random among the tied if still stuck. Stances are shown to the pack as a guide that binds nobody. Volunteering is not an order — and a wolf who stayed quiet may still claim by day. The host finally stopped appointing a night dictator based on array index zero.
 
-## Prompt bugs that look like strategy
+### Prompt bugs that look like strategy
 
 These were not "AI is bad at Werewolf." These were me writing instructions that rewarded the wrong habit.
 
@@ -142,7 +142,7 @@ The prompt now detects a sheriff PK from the last election ballot on the turn (`
 
 **Chinese UI left English in the wolf-vote dropdown.** `fake seer` / `hook` showed raw because the page translates via a word map the server forgot to fill. Fixed with `PageWords`, plus a test that scrapes every `opts([...])` literal off `index.html` and demands Han characters for a Chinese board. CI is a better proofreader than I am at 1am.
 
-## What I trust, what I don't
+### What I trust, what I don't
 
 The durable bits I trust: filtered views, activities for LLM/RNG, continue-as-new, humans as external events, XOR-flavored night resolution. You can kill `gm` mid-argument; Catalyst's history does not care about your feelings.
 
