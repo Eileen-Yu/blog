@@ -1,0 +1,9 @@
+---
+import Base from '../../layouts/Base.astro';
+import List from '../../components/List.astro';
+import { allPosts } from '../../lib';
+const posts = await allPosts();
+---
+<Base title="Archives">
+  <div class="wrap"><h1 class="page-title">Archives</h1><List posts={posts} /></div>
+</Base>

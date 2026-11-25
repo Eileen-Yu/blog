@@ -1,0 +1,17 @@
+---
+import Base from '../../../layouts/Base.astro';
+import List from '../../../components/List.astro';
+import { allPosts, termSlug, type Post } from '../../../lib';
+export async function getStaticPaths() {
+  const posts = await allPosts();
+  const names = [...new Set(posts.flatMap((p) => p.data.tags))];
+  return names.map((name) => ({
+    params: { tag: termSlug(name) },
+    props: { name, posts: posts.filter((p) => p.data.tags.includes(name)) },
+  }));
+}
+const { name, posts } = Astro.props as { name: string; posts: Post[] };
+---
+<Base title={`#${name}`}>
+  <div class="wrap"><h1 class="page-title">#{name}</h1><List posts={posts} /></div>
+</Base>

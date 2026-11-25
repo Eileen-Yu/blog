@@ -1,0 +1,32 @@
+---
+import { render } from 'astro:content';
+import Base from '../../../../../layouts/Base.astro';
+import { allPosts, postParts, postUrl, fmtDate, termSlug, excerpt, type Post } from '../../../../../lib';
+
+export async function getStaticPaths() {
+  const posts = await allPosts();
+  return posts.map((post, i) => ({
+    params: postParts(post),
+    props: { post, newer: posts[i - 1], older: posts[i + 1] },
+  }));
+}
+interface Props { post: Post; newer?: Post; older?: Post }
+const { post, newer, older } = Astro.props;
+const { Content } = await render(post);
+---
+<Base title={post.data.title} description={excerpt(post, 160)}>
+  <article class="wrap post">
+    <div class="meta">
+      {fmtDate(post.data.date)}
+      {post.data.categories.map((c) => <> · <a href={`/categories/${termSlug(c)}/`}>{c}</a></>)}
+    </div>
+    <h1>{post.data.title}</h1>
+    <Content />
+    <hr />
+    <div class="meta tags">{post.data.tags.map((t) => <a href={`/tags/${termSlug(t)}/`}>#{t}</a>)}</div>
+    <nav class="pager">
+      <span>{newer && <a href={postUrl(newer)}>← {newer.data.title}</a>}</span>
+      <span>{older && <a href={postUrl(older)}>{older.data.title} →</a>}</span>
+    </nav>
+  </article>
+</Base>

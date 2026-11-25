@@ -1,0 +1,45 @@
+---
+import '../styles/global.css';
+import { SITE } from '../lib';
+interface Props { title?: string; description?: string; hero?: boolean }
+const { title, description = SITE.subtitle, hero = false } = Astro.props;
+const fullTitle = title ? `${title} | ${SITE.title}` : SITE.title;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{fullTitle}</title>
+  <meta name="description" content={description} />
+  <link rel="icon" href="/img/favicon.ico" />
+  <link rel="alternate" type="application/atom+xml" title={SITE.title} href="/atom.xml" />
+  <meta property="og:title" content={fullTitle} />
+  <meta property="og:description" content={description} />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;1,400;1,700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <header class="nav">
+    <div class="nav-inner">
+      <a class="brand" href="/"><img src="/img/logo.png" alt="" />{SITE.title}</a>
+      <nav class="links">
+        <a href="/">Home</a>
+        <a href="/archives/">Archives</a>
+        <a href={SITE.github}>GitHub</a>
+        <a href={SITE.linkedin}>LinkedIn</a>
+        <a href="/atom.xml">RSS</a>
+      </nav>
+    </div>
+  </header>
+  {hero && (
+    <section class="hero"><div><h1>{SITE.title}</h1><p>{SITE.subtitle}</p></div></section>
+  )}
+  <main><slot /></main>
+  <footer>
+    <div class="social"><a href={SITE.github}>GitHub</a><a href={SITE.twitter}>Twitter</a><a href={SITE.linkedin}>LinkedIn</a></div>
+    <p>&copy; 2019–{new Date().getFullYear()} {SITE.title}</p>
+  </footer>
+</body>
+</html>

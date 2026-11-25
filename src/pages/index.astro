@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import { allPosts, postUrl, fmtDate, excerpt } from '../lib';
+const posts = await allPosts();
+---
+<Base hero>
+  <div class="wrap">
+    {posts.map((p) => (
+      <article class="entry">
+        <div>
+          <h2><a href={postUrl(p)}>{p.data.title}</a></h2>
+          <div class="meta">{fmtDate(p.data.date)}</div>
+        </div>
+        <div>
+          <p>{excerpt(p)}</p>
+          <a class="more" href={postUrl(p)}>Read more →</a>
+        </div>
+      </article>
+    ))}
+  </div>
+  <p class="statement">viel spaß!</p>
+</Base>

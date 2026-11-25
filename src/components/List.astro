@@ -1,0 +1,18 @@
+---
+import { postUrl, fmtDate, type Post } from '../lib';
+interface Props { posts: Post[]; byYear?: boolean }
+const { posts, byYear = true } = Astro.props;
+const groups = new Map<string, Post[]>();
+for (const p of posts) {
+  const k = byYear ? String(p.data.date.getUTCFullYear()) : '';
+  groups.set(k, [...(groups.get(k) ?? []), p]);
+}
+---
+<div class="archive">
+  {[...groups].map(([year, list]) => (
+    <section>
+      {year && <h2>{year}</h2>}
+      <ul>{list.map((p) => <li><span class="meta">{fmtDate(p.data.date)}</span><a href={postUrl(p)}>{p.data.title}</a></li>)}</ul>
+    </section>
+  ))}
+</div>
