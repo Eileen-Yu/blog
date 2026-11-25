@@ -6,7 +6,6 @@ export const SITE = {
   title: 'Eileen Yu',
   subtitle: 'still curious, even when it makes no sense',
   github: 'https://github.com/Eileen-Yu',
-  twitter: 'https://twitter.com/eil7007',
   linkedin: 'https://www.linkedin.com/in/eileen-yu/',
 };
 
